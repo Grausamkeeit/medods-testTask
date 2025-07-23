@@ -1,0 +1,127 @@
+definitions:
+  api.RefreshRequest:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /logout:
+    post:
+      description: Аннулирует токены пользователя
+      parameters:
+      - description: Access-токен
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Logged out
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Деавторизация пользователя
+      tags:
+      - auth
+  /me:
+    get:
+      description: Возвращает GUID текущего пользователя
+      parameters:
+      - description: Access-токен
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Получение GUID пользователя
+      tags:
+      - auth
+  /refresh:
+    post:
+      consumes:
+      - application/json
+      description: Обновляет пару токенов
+      parameters:
+      - description: Токены
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api.RefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            type: string
+        "401":
+          description: Invalid tokens
+          schema:
+            type: string
+      summary: Обновление токенов
+      tags:
+      - auth
+  /token:
+    get:
+      consumes:
+      - application/json
+      description: Выдает access и refresh токены для указанного GUID
+      parameters:
+      - description: GUID пользователя
+        in: query
+        name: guid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid GUID
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Получение пары токенов
+      tags:
+      - auth
+swagger: "2.0"
